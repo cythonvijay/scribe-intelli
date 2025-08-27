@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import React from "react";
-import OCR from "./pages/OCR";
+import OCR from "./OCR"; // or "./pages/OCR" if OCR.tsx is inside pages/
 
 const queryClient = new QueryClient();
 
@@ -20,7 +20,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/ocr" element={<OCR />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
@@ -30,8 +29,6 @@ function App() {
 }
 
 export default App;
-
-
 
 
 
