@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-
+import React from "react";
+import OCR from "./pages/OCR";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -23,5 +24,14 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
-
+function App() {
+  return (
+    <div className="App">
+      <OCR />
+    </div>
+  );
+}
 export default App;
+
+
+
