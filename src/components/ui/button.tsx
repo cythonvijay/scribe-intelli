@@ -9,18 +9,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "gradient-primary text-primary-foreground hover:opacity-90 shadow-elegant",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "gradient-primary text-primary-foreground hover:opacity-90 shadow-glow text-lg font-semibold animate-glow",
-        ai: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-elegant border border-primary/20",
-        upload: "border-2 border-dashed border-primary/30 bg-primary/5 text-primary hover:border-primary/50 hover:bg-primary/10 transition-smooth",
+        hero: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-elegant text-base font-semibold",
+        ai: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm border border-primary/20",
+        upload: "border-2 border-dashed border-input bg-background text-muted-foreground hover:border-primary/50 hover:bg-accent hover:text-accent-foreground transition-smooth",
       },
       size: {
         default: "h-10 px-4 py-2",
