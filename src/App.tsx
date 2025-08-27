@@ -6,8 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import React from "react";
-import OCR from "./OCR"; // or "./pages/OCR" if OCR.tsx is inside pages/
-
+import OCR from "./OCR"; 
 const queryClient = new QueryClient();
 
 function App() {
@@ -26,9 +25,8 @@ function App() {
       </TooltipProvider>
     </QueryClientProvider>
   );
+  export default App;
 }
-
-export default App;
 
 
 
