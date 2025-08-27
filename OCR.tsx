@@ -23,7 +23,7 @@ const OCR: React.FC = () => {
       const response = await fetch("https://api.ocr.space/parse/image", {
         method: "POST",
         headers: {
-          apikey: process.env.REACT_APP_OCR_API_KEY as string, // 👈 API Key from Vercel
+          apikey: process.env.REACT_APP_OCR_API_KEY as string,
         },
         body: formData,
       });
