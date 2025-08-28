@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import React from "react";
-import OCR from "./OCR"; 
 const queryClient = new QueryClient();
 
 function App() {
@@ -18,15 +17,15 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/ocr" element={<OCR />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );
-  export default App;
 }
+
+export default App;
 
 
 
