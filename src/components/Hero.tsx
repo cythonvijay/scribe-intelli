@@ -33,12 +33,22 @@ export const Hero = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button variant="hero" size="lg" className="group text-base">
+            <Button 
+              variant="hero" 
+              size="lg" 
+              className="group text-base"
+              onClick={() => window.location.href = '/auth'}
+            >
               <FileText className="h-5 w-5 mr-2" />
               Start Free Trial
               <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="outline" size="lg" className="text-base">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="text-base"
+              onClick={() => window.location.href = '/contact'}
+            >
               Schedule Demo
             </Button>
           </div>

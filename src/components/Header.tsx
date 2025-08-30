@@ -31,10 +31,20 @@ export const Header = () => {
         </nav>
         
         <div className="flex items-center space-x-3">
-          <Button variant="outline" size="sm" className="hidden sm:flex text-sm">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="hidden sm:flex text-sm"
+            onClick={() => window.location.href = '/auth'}
+          >
             Sign In
           </Button>
-          <Button variant="default" size="sm" className="hidden sm:flex text-sm">
+          <Button 
+            variant="default" 
+            size="sm" 
+            className="hidden sm:flex text-sm"
+            onClick={() => window.location.href = '/auth'}
+          >
             <Zap className="h-4 w-4 mr-1" />
             Start Free Trial
           </Button>

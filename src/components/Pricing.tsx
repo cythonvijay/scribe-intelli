@@ -131,6 +131,7 @@ export const Pricing = () => {
                     variant={plan.variant} 
                     className="w-full" 
                     size="lg"
+                    onClick={() => window.location.href = plan.name === 'Enterprise' ? '/contact' : `/checkout?plan=${plan.name.toLowerCase()}&billing=monthly`}
                   >
                     {plan.cta}
                   </Button>
@@ -163,7 +164,11 @@ export const Pricing = () => {
               We work with enterprise clients to create tailored solutions that meet 
               specific compliance, security, and integration requirements.
             </p>
-            <Button variant="outline" size="lg">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => window.location.href = '/contact'}
+            >
               Contact Enterprise Sales
             </Button>
           </div>
