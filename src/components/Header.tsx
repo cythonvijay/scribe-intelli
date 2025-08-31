@@ -27,9 +27,6 @@ export const Header = () => {
           <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">
             How it Works
           </a>
-          <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">
-            Pricing
-          </a>
           <a href="#upload" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth">
             Try Demo
           </a>
