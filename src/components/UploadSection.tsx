@@ -3,13 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, FileText, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, FileText, CheckCircle, Download } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const UploadSection = () => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [extractedText, setExtractedText] = useState<string>("");
   const { toast } = useToast();
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -39,10 +41,10 @@ export const UploadSection = () => {
   };
 
   const handleFile = async (file: File) => {
-    if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+    if (!file.type.startsWith('image/')) {
       toast({
         title: "Invalid file type",
-        description: "Please upload an image (JPG, PNG) or PDF file.",
+        description: "Please upload an image (JPG, PNG).",
         variant: "destructive",
       });
       return;
@@ -51,30 +53,73 @@ export const UploadSection = () => {
     setUploadedFile(file);
     setUploading(true);
     setProgress(0);
+    setExtractedText("");
 
-    // Simulate processing progress
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setUploading(false);
-          toast({
-            title: "Upload successful!",
-            description: "Your document has been processed and is ready for extraction.",
+    try {
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64String = e.target?.result as string;
+        
+        // Update progress to 30%
+        setProgress(30);
+
+        try {
+          // Call Gemini OCR function
+          const { data, error } = await supabase.functions.invoke('ocr-gemini', {
+            body: { image: base64String }
           });
-          return 100;
+
+          setProgress(70);
+
+          if (error) throw error;
+
+          if (data.success) {
+            setExtractedText(data.text);
+            setProgress(100);
+            setUploading(false);
+            toast({
+              title: "OCR Complete!",
+              description: "Text has been successfully extracted from your document.",
+            });
+          } else {
+            throw new Error(data.error || 'OCR processing failed');
+          }
+        } catch (error) {
+          console.error('OCR error:', error);
+          setUploading(false);
+          setProgress(0);
+          toast({
+            title: "Processing failed",
+            description: error.message || "Failed to extract text from the image.",
+            variant: "destructive",
+          });
         }
-        return prev + 10;
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('File reading error:', error);
+      setUploading(false);
+      setProgress(0);
+      toast({
+        title: "File processing failed",
+        description: "Failed to process the uploaded file.",
+        variant: "destructive",
       });
-    }, 200);
+    }
   };
 
-  const handleBackendNote = () => {
-    toast({
-      title: "Backend Integration Required",
-      description: "Connect to Supabase to enable full OCR processing and data storage capabilities.",
-      variant: "destructive",
-    });
+  const downloadText = () => {
+    if (!extractedText) return;
+    
+    const element = document.createElement("a");
+    const file = new Blob([extractedText], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = `extracted-text-${uploadedFile?.name || 'document'}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   return (
@@ -94,7 +139,7 @@ export const UploadSection = () => {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Document Upload</CardTitle>
               <CardDescription>
-                Support for JPG, PNG, and PDF files up to 10MB
+                Support for JPG and PNG files up to 10MB
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8">
@@ -124,7 +169,7 @@ export const UploadSection = () => {
                   <input
                     id="file-input"
                     type="file"
-                    accept="image/*,.pdf"
+                    accept="image/*"
                     onChange={handleFileInput}
                     className="hidden"
                   />
@@ -149,40 +194,45 @@ export const UploadSection = () => {
 
                   {/* Progress */}
                   {uploading && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Processing document...</span>
-                        <span>{progress}%</span>
-                      </div>
-                      <Progress value={progress} className="h-2" />
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>
+                        {progress < 40 ? "Reading document..." : 
+                         progress < 80 ? "Extracting text with AI..." : "Finalizing..."}
+                      </span>
+                      <span>{progress}%</span>
                     </div>
+                    <Progress value={progress} className="h-2" />
+                  </div>
                   )}
 
                   {/* Results */}
-                  {progress === 100 && (
+                  {progress === 100 && extractedText && (
                     <div className="space-y-4">
                       <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                         <div className="flex items-center space-x-2 mb-2">
                           <CheckCircle className="h-5 w-5 text-green-500" />
                           <span className="font-medium text-green-700 dark:text-green-300">
-                            Processing Complete
+                            Text Extraction Complete
                           </span>
                         </div>
-                        <p className="text-sm text-green-600 dark:text-green-400">
-                          Your document has been successfully digitized. Connect backend to view full results.
+                        <p className="text-sm text-green-600 dark:text-green-400 mb-3">
+                          Your document has been successfully processed using AI-powered OCR.
                         </p>
+                        <div className="max-h-48 overflow-y-auto bg-white dark:bg-gray-800 p-3 rounded border text-sm">
+                          <pre className="whitespace-pre-wrap font-mono">{extractedText}</pre>
+                        </div>
                       </div>
 
                       <div className="flex space-x-3">
-                        <Button variant="ai" onClick={handleBackendNote}>
-                          View Results
-                        </Button>
-                        <Button variant="outline" onClick={handleBackendNote}>
+                        <Button variant="outline" onClick={downloadText}>
+                          <Download className="h-4 w-4 mr-2" />
                           Download Text
                         </Button>
                         <Button variant="ghost" onClick={() => {
                           setUploadedFile(null);
                           setProgress(0);
+                          setExtractedText("");
                         }}>
                           Upload Another
                         </Button>
@@ -194,23 +244,6 @@ export const UploadSection = () => {
             </CardContent>
           </Card>
 
-          {/* Backend Integration Notice */}
-          <Card className="mt-8 border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
-            <CardContent className="p-6">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
-                <div>
-                  <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-1">
-                    Full Functionality Requires Backend Integration
-                  </h4>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                    To enable complete OCR processing, information extraction, and database storage, 
-                    connect your project to Supabase using the integration button above.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </section>
